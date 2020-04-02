@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-probes
+  labels:
+    app: health-probeshealth-probes
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: health-probes
+  template:
+    metadata:
+      labels:
+        app: health-probes
+    spec:
+      containers:
+        - name: health-probe
+          image: heathland/health-probes:latest
+
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: WAIT_STARTUP_TIME
+              value: "20"
+            - name: WAIT_LIVENESS_TIME
+              value: "35"
+            - name: JOB_DURATION_TIME
+              value: "20"
+
+          livenessProbe:
+            httpGet:
+              path: /livenessProbe
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 4
+
+          readinessProbe:
+            httpGet:
+              path: /readinessProbe
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 1
+
+          # Only in 1.16 and up
+          # The startupProbe will precede the liveness and readiness Probes
+          startupProbe:
+            httpGet:
+              path: /startupProbe
+              port: http
+            # This means it has a maximum of 30*5=150 seconds to start up before it fails
+            failureThreshold: 30
+            periodSeconds: 5
