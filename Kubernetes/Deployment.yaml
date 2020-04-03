@@ -5,7 +5,7 @@ metadata:
   labels:
     app: health-probeshealth-probes
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: health-probes
@@ -21,13 +21,17 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          env:
-            - name: WAIT_STARTUP_TIME
-              value: "20"
-            - name: WAIT_LIVENESS_TIME
-              value: "35"
-            - name: JOB_DURATION_TIME
-              value: "20"
+
+          # Use the followint to adjust the default times if you wish
+          # env:
+          #   - name: WAIT_STARTUP_TIME
+          #     value: "0"
+          #   - name: WAIT_LIVENESS_TIME
+          #     value: "60"
+          #   - name: WAIT_READINESS_TIME
+          #     value: "90"
+          #   - name: JOB_DURATION_TIME
+          #     value: "20"
 
           livenessProbe:
             httpGet:
@@ -37,17 +41,17 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 1
             successThreshold: 1
-            failureThreshold: 4
+            failureThreshold: 18
 
           readinessProbe:
             httpGet:
               path: /readinessProbe
               port: http
-            initialDelaySeconds: 15
+            initialDelaySeconds: 0
             periodSeconds: 5
             timeoutSeconds: 1
             successThreshold: 1
-            failureThreshold: 1
+            failureThreshold: 18
 
           # Only in 1.16 and up
           # The startupProbe will precede the liveness and readiness Probes

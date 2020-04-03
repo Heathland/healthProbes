@@ -35,8 +35,9 @@ FROM alpine AS final
 LABEL maintainer="r.vanderheide@wearetriple.com"
 
 # Setting default values
-ENV WAIT_STARTUP_TIME 20
-ENV WAIT_LIVENESS_TIME 35
+ENV WAIT_STARTUP_TIME 30
+ENV WAIT_LIVENESS_TIME 60
+ENV WAIT_READINESS_TIME 90
 ENV JOB_DURATION_TIME 20
 
 # Import the compiled executable from the first stage.

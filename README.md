@@ -24,17 +24,18 @@ Namely:
 The functions name should be a clear enough indication as to what their functions are, apart from `/startjob` which I will 
 elaborate on further up.
 
-The endpoints `/startupProbe` and `/livenessProbe` will start with giving up 503's for a given duration. The extend of 
-that duration can be determined by setting the appropriate ENV values, namely: `WAIT_STARTUP_TIME` and `WAIT_LIVENESS_TIME`.
+The Probe endpoints will start with giving up 503's for a given duration. The extend of 
+that duration can be determined by setting the appropriate ENV values, namely: `WAIT_STARTUP_TIME`, `WAIT_READINESS_TIME` and `WAIT_LIVENESS_TIME`.
 After that duration has passed, they will give off 200's.
 
-Then we also have the `/readinessProbe` endpoint, which will start off with giving off 200's. However, once a GET is done  
-against `/startjob` the `/readinessProbe` endpoint will start to give off 503 for a given duration. The duration can be set 
-by adjusting the  `JOB_DURATION_TIME` ENV variable, after the duration has passed, it will also start giving off 200's again.
+Then we also have an added feature to the `/readinessProbe` endpoint. Once a GET is done against `/startjob` the `/readinessProbe` endpoint 
+will start to give off 503 for a given duration. The duration can be set by adjusting the  `JOB_DURATION_TIME` ENV variable, 
+after the duration has passed, it will also start giving off 200's again.
 
 The default values are:  
-`ENV WAIT_STARTUP_TIME 20`  
-`ENV WAIT_LIVENESS_TIME 35`  
+`ENV WAIT_STARTUP_TIME 30`  
+`ENV WAIT_LIVENESS_TIME 60`  
+`ENV WAIT_READINESS_TIME 90`  
 `ENV JOB_DURATION_TIME 20`
 
 

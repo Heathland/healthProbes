@@ -10,12 +10,13 @@ import (
 )
 
 type Server struct {
-	port             int
-	t                time.Time
-	jobStart         time.Time
-	waitStartupTime  time.Duration
-	waitLivenessTime time.Duration
-	jobDuration      time.Duration
+	port              int
+	t                 time.Time
+	jobStart          time.Time
+	waitStartupTime   time.Duration
+	waitLivenessTime  time.Duration
+	waitReadinessTime time.Duration
+	jobDuration       time.Duration
 }
 
 func main() {
@@ -60,6 +61,10 @@ func (s *Server) getEnvValues() (err error) {
 	if err != nil {
 		return
 	}
+	s.waitReadinessTime, err = getEnvToDuration("WAIT_READINESS_TIME")
+	if err != nil {
+		return
+	}
 	s.jobDuration, err = getEnvToDuration("JOB_DURATION_TIME")
 	if err != nil {
 		return
@@ -84,7 +89,7 @@ func (s *Server) livenessProbe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) readinessProbe(w http.ResponseWriter, r *http.Request) {
-	if time.Since(s.jobStart) > s.jobDuration {
+	if time.Since(s.t) > s.waitReadinessTime && time.Since(s.jobStart) > s.jobDuration {
 		w.WriteHeader(200)
 	} else {
 		w.WriteHeader(503)
